@@ -1,6 +1,4 @@
-import React from 'react';
-import update from 'immutability-helper'
-import _ from 'lodash'
+import React from 'react'
 
 class App extends React.Component {
   constructor() {
@@ -15,8 +13,8 @@ class App extends React.Component {
     fetch('https://recruitment.hal.skygate.io/companies').then((res, rej) => { // get the list of all companies
       return res.json()
     }).then(listOfCompanies => {
-      listOfCompanies.map(company => { // map through all companies
-        fetch(`https://recruitment.hal.skygate.io/incomes/${company.id}`).then((res, rej) => { // fetch the incomes of a specific company
+      listOfCompanies.map(company => {
+        return fetch(`https://recruitment.hal.skygate.io/incomes/${company.id}`).then((res, rej) => { // fetch the incomes of a specific company
           return res.json()
         }).then(companyIncomes => {
           const listOfCompaniesMatchedCompany = listOfCompanies.filter(company => { // filter list of companies...
@@ -31,16 +29,34 @@ class App extends React.Component {
     }).catch(err => console.log(err))
   }
 
+  sumOfIncomes(incomes) {
+    const sum = incomes.reduce((acc, income) => {
+      return acc + parseFloat(income.value)
+    }, 0)
+    return (Math.round(sum * 100) / 100).toFixed(2) //round up to 2 dec points, then print 2 dec points always
+  }
+
+  lastMonthIncome(incomes) {
+    const now = new Date(Date.now())
+    const monthTwoDigits = now.getMonth() <= 9 ? `0${now.getMonth()}` : now.getMonth()
+    const lastMonthRegex = `^${now.getFullYear()}-${monthTwoDigits-1}` //returns if string begins with '2020-03' or today's equivalent
+    return incomes.reduce((acc, income) => {
+      if(income.date.match(lastMonthRegex)) {
+        return acc + parseFloat(income.value)
+      } else return acc
+    }, 0)
+  }
+
   render() {
-    const companies = this.state.companies.map(company => {
+    const companies = this.state.companies.map((company, i) => {
       return (
         <tr key={company.id}>
           <td>{company.id}</td>
           <td>{company.name}</td>
           <td>{company.city}</td>
-          <td>TBD</td>
-          <td>TBD</td>
-          <td>TBD</td>
+          <td>{this.sumOfIncomes(company.incomes)}</td>
+          <td>{(this.sumOfIncomes(company.incomes) / company.incomes.length).toFixed(2)}</td>
+          <td>{this.lastMonthIncome(company.incomes)}</td>
         </tr>
       )
     })
