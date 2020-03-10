@@ -57,22 +57,6 @@ class App extends React.Component {
     }).catch(err => console.log(err))
   }
 
-  handleChange(e) {
-    const target = e.target
-    this.setState(state => {
-      return {
-        inputs: {
-          ...state.inputs,
-          [target.id]: target.value
-        },
-        pagination: {
-          ...state.pagination,
-          pageNumber: 0
-        }
-      }
-    })
-  }
-
   async putTableContentToState() {
     Promise.all(this.state.companies.map((company, i) => {
       this.setState((state) => {
@@ -88,6 +72,22 @@ class App extends React.Component {
         }
       })
     }))
+  }
+
+  handleChange(e) {
+    const target = e.target
+    this.setState(state => {
+      return {
+        inputs: {
+          ...state.inputs,
+          [target.id]: target.value
+        },
+        pagination: {
+          ...state.pagination,
+          pageNumber: 0
+        }
+      }
+    })
   }
 
   sortBy(element) {
@@ -110,12 +110,13 @@ class App extends React.Component {
     })
   }
 
-  onPageChange(e, button) {
+  onPageChange(e, button, len) {
     const records = this.state.pagination.recordsPerPage
     const pages = this.state.pagination.pageNumber
     
     e.preventDefault()
-    if(button === 'gt' && (records*(pages+1)) < this.state.companies.length) {
+
+    if(button === 'gt' && (records*(pages+1)) < len) {
       this.setState(state => ({
         pagination: {
           ...state.pagination,
@@ -215,16 +216,16 @@ class App extends React.Component {
             <tr>
               <td>
                 <form>
-                  <button onClick={(e) => this.onPageChange(e, 'lt')}>&lt;</button> 
+                  <button onClick={(e) => this.onPageChange(e, 'lt', companies.length)}>&lt;</button> 
                   <select name='recordsPerPage' onChange={this.onSelectChange} value={this.state.pagination.recordsPerPage}>
                     <option value='10'>10</option>
                     <option value='25'>25</option>
                     <option value='50'>50</option>
                     <option value='100'>100</option>
                   </select>
-                  <button onClick={(e) => this.onPageChange(e, 'gt')}>&gt;</button>
+                  <button onClick={(e) => this.onPageChange(e, 'gt', companies.length)}>&gt;</button>
                 </form>
-                {`(${(pages*records)+1}-${((pages+1)*records)})/${this.state.table.length}`}
+                {`(${(pages*records)+1}-${((pages+1)*records) < companies.length ? ((pages+1)*records) : companies.length})/${companies.length}`}
               </td>
             </tr>
           </tbody>
