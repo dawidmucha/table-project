@@ -27,7 +27,8 @@ class App extends React.Component {
       pagination: {
         recordsPerPage: 10,
         pageNumber: 0
-      }
+      },
+      fetched: false
     }
 
     this.putTableContentToState = this.putTableContentToState.bind(this)
@@ -54,6 +55,7 @@ class App extends React.Component {
         })
       }))
     }).then(() => {
+      this.setState({ fetched: true })
       this.putTableContentToState()
     }).catch(err => console.log(err))
   }
@@ -191,47 +193,49 @@ class App extends React.Component {
       }
     })
 
+    const table = (
+      <table>
+        <thead>
+          <tr>
+            <th onClick={() => this.sortBy('id')}>id</th>
+            <th onClick={() => this.sortBy('name')}>name</th>
+            <th onClick={() => this.sortBy('city')}>city</th>
+            <th onClick={() => this.sortBy('sum')}>tot. income</th>
+            <th onClick={() => this.sortBy('avg')}>avg. income</th>
+            <th onClick={() => this.sortBy('last')}>last month income</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><input id='tSearchId' type='text' name='id' onChange={this.handleChange} /></td>
+            <td><input id='tSearchName' type='text' name='name' onChange={this.handleChange} /></td>
+            <td><input id='tSearchCity' type='text' name='city' onChange={this.handleChange} /></td>
+            <td><input id='tSearchSum' type='text' name='sum' onChange={this.handleChange} /></td>
+            <td><input id='tSearchAvg' type='text' name='avg' onChange={this.handleChange} /></td>
+            <td><input id='tSearchLast' type='text' name='last' onChange={this.handleChange} /></td>
+          </tr>
+          {companies}
+          <tr>
+            <td colspan='6'>
+              <form>
+                <button id='backButton' onClick={(e) => this.onPageChange(e, 'lt', companies.length)}>&lt;</button> 
+                <select id='dropdown' name='recordsPerPage' onChange={this.onSelectChange} value={this.state.pagination.recordsPerPage}>
+                  <option value='10'>10</option>
+                  <option value='25'>25</option>
+                  <option value='50'>50</option>
+                  <option value='100'>100</option>
+                </select>
+                <button id='forwardButton' onClick={(e) => this.onPageChange(e, 'gt', companies.length)}>&gt;</button>
+              </form>
+              <span>{`(${(pages*records)+1}-${((pages+1)*records) < companies.length ? ((pages+1)*records) : companies.length})/${companies.length}`}</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    )
+
     return (
-      <div>
-        <table>
-          <thead>
-            <tr>
-              <th onClick={() => this.sortBy('id')}>id</th>
-              <th onClick={() => this.sortBy('name')}>name</th>
-              <th onClick={() => this.sortBy('city')}>city</th>
-              <th onClick={() => this.sortBy('sum')}>tot. income</th>
-              <th onClick={() => this.sortBy('avg')}>avg. income</th>
-              <th onClick={() => this.sortBy('last')}>last month income</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><input id='tSearchId' type='text' name='id' onChange={this.handleChange} /></td>
-              <td><input id='tSearchName' type='text' name='name' onChange={this.handleChange} /></td>
-              <td><input id='tSearchCity' type='text' name='city' onChange={this.handleChange} /></td>
-              <td><input id='tSearchSum' type='text' name='sum' onChange={this.handleChange} /></td>
-              <td><input id='tSearchAvg' type='text' name='avg' onChange={this.handleChange} /></td>
-              <td><input id='tSearchLast' type='text' name='last' onChange={this.handleChange} /></td>
-            </tr>
-            {companies}
-            <tr>
-              <td colspan='6'>
-                <form>
-                  <button id='backButton' onClick={(e) => this.onPageChange(e, 'lt', companies.length)}>&lt;</button> 
-                  <select id='dropdown' name='recordsPerPage' onChange={this.onSelectChange} value={this.state.pagination.recordsPerPage}>
-                    <option value='10'>10</option>
-                    <option value='25'>25</option>
-                    <option value='50'>50</option>
-                    <option value='100'>100</option>
-                  </select>
-                  <button id='forwardButton' onClick={(e) => this.onPageChange(e, 'gt', companies.length)}>&gt;</button>
-                </form>
-                <span>{`(${(pages*records)+1}-${((pages+1)*records) < companies.length ? ((pages+1)*records) : companies.length})/${companies.length}`}</span>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <div>{this.state.fetched ? table : <h1>Loading...</h1>}</div>
     )
   }
 }
