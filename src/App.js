@@ -1,4 +1,5 @@
 import React from 'react'
+import './App.css'
 
 class App extends React.Component {
   constructor() {
@@ -80,7 +81,7 @@ class App extends React.Component {
       return {
         inputs: {
           ...state.inputs,
-          [target.id]: target.value
+          [target.name]: target.value
         },
         pagination: {
           ...state.pagination,
@@ -182,9 +183,9 @@ class App extends React.Component {
             <td>{company.id}</td>
             <td>{company.name}</td>
             <td>{company.city}</td>
-            <td>{company.sum}</td>
-            <td>{company.avg}</td>
-            <td>{company.last}</td>
+            <td>{new Intl.NumberFormat().format(company.sum)}</td>
+            <td>{new Intl.NumberFormat().format(company.avg)}</td>
+            <td>{new Intl.NumberFormat().format(company.last)}</td>
           </tr>
         )
       }
@@ -192,7 +193,7 @@ class App extends React.Component {
 
     return (
       <div>
-        <table style={{border: '1px solid black'}}>
+        <table>
           <thead>
             <tr>
               <th onClick={() => this.sortBy('id')}>id</th>
@@ -205,27 +206,27 @@ class App extends React.Component {
           </thead>
           <tbody>
             <tr>
-              <td><input type='text' id='id' onChange={this.handleChange} /></td>
-              <td><input type='text' id='name' onChange={this.handleChange} /></td>
-              <td><input type='text' id='city' onChange={this.handleChange} /></td>
-              <td><input type='text' id='sum' onChange={this.handleChange} /></td>
-              <td><input type='text' id='avg' onChange={this.handleChange} /></td>
-              <td><input type='text' id='last' onChange={this.handleChange} /></td>
+              <td><input id='tSearchId' type='text' name='id' onChange={this.handleChange} /></td>
+              <td><input id='tSearchName' type='text' name='name' onChange={this.handleChange} /></td>
+              <td><input id='tSearchCity' type='text' name='city' onChange={this.handleChange} /></td>
+              <td><input id='tSearchSum' type='text' name='sum' onChange={this.handleChange} /></td>
+              <td><input id='tSearchAvg' type='text' name='avg' onChange={this.handleChange} /></td>
+              <td><input id='tSearchLast' type='text' name='last' onChange={this.handleChange} /></td>
             </tr>
             {companies}
             <tr>
-              <td>
+              <td colspan='6'>
                 <form>
-                  <button onClick={(e) => this.onPageChange(e, 'lt', companies.length)}>&lt;</button> 
-                  <select name='recordsPerPage' onChange={this.onSelectChange} value={this.state.pagination.recordsPerPage}>
+                  <button id='backButton' onClick={(e) => this.onPageChange(e, 'lt', companies.length)}>&lt;</button> 
+                  <select id='dropdown' name='recordsPerPage' onChange={this.onSelectChange} value={this.state.pagination.recordsPerPage}>
                     <option value='10'>10</option>
                     <option value='25'>25</option>
                     <option value='50'>50</option>
                     <option value='100'>100</option>
                   </select>
-                  <button onClick={(e) => this.onPageChange(e, 'gt', companies.length)}>&gt;</button>
+                  <button id='forwardButton' onClick={(e) => this.onPageChange(e, 'gt', companies.length)}>&gt;</button>
                 </form>
-                {`(${(pages*records)+1}-${((pages+1)*records) < companies.length ? ((pages+1)*records) : companies.length})/${companies.length}`}
+                <span>{`(${(pages*records)+1}-${((pages+1)*records) < companies.length ? ((pages+1)*records) : companies.length})/${companies.length}`}</span>
               </td>
             </tr>
           </tbody>
