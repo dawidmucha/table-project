@@ -2,7 +2,7 @@
 A simple website that showcases a table of expences taken from an API
 
 ## Website:
-[Link](not-yet)
+[Link](https://dawidmucha.github.io/table-project/.)
 
 ### This project was build using create-react-app
 
